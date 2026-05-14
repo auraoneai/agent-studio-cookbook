@@ -43,8 +43,8 @@ agentstudio --json connect stdio --command python --arg sample-servers/crm-refun
 ```bash
 agentstudio connect --stdio "npx -y @modelcontextprotocol/server-filesystem ./fixtures"
 agentstudio risk-scan ./server --format json --out reports/risk.json
-agentstudio import-trace ../agent-studio-open/cli/tests/fixtures/openai_events.jsonl --format openai --store filesystem-smoke.ast
-agentstudio export trace-card ../agent-trace-card/examples/refund_trace.json --out reports/filesystem-smoke.md
+agentstudio record --session filesystem-smoke --tool list_directory --json '{"path":"."}'
+agentstudio replay filesystem-smoke.ast --export trace-card --out reports/filesystem-smoke.md
 ```
 
 Browser edition can use the HTTP/SSE examples but cannot spawn stdio servers or
