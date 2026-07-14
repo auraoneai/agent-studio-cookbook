@@ -1,14 +1,33 @@
-# Provider Keys
+# Provider Calls and Keys
 
-Stores provider keys locally and runs a model compare smoke check.
+The published CLI reads provider credentials from environment variables. It
+does not provide a `providers set` credential-store command.
+
+Verify command wiring without a key or network request:
 
 ```bash
-agentstudio providers set anthropic --env ANTHROPIC_API_KEY
-agentstudio providers set openai --env OPENAI_API_KEY
-agentstudio providers set ollama --base-url http://127.0.0.1:11434/v1
-agentstudio providers test --all
-agentstudio compare ./traces/refund.ast --models anthropic:claude-sonnet,openai:gpt-4.1 --out reports/compare.md
+agentstudio --json model \
+  --provider openai \
+  --model smoke-model \
+  --prompt "Summarize this trace" \
+  --dry-run
 ```
 
-Keys are not written to trace cards, telemetry, JUnit exports, or intake packet
-previews.
+For an intentional live call, set the provider environment variable and remove
+`--dry-run`:
+
+```bash
+export OPENAI_API_KEY="<redacted>"
+
+agentstudio --json model \
+  --provider openai \
+  --model <available-model-id> \
+  --prompt "Summarize this trace"
+```
+
+Supported environment variables in `auraone-agent-studio-open==0.1.1` are
+`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`, and optional
+`OLLAMA_URL`. Live commands send the prompt to the selected provider or Ollama
+endpoint. The CLI does not persist keys, but shell history, process
+environments, provider logs, and command output remain separate review
+boundaries.

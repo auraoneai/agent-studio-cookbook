@@ -1,19 +1,33 @@
-# OTEL to Regression
+# OTLP or Phoenix to Regression
 
-Imports OpenTelemetry GenAI spans or Phoenix JSON and converts a failed span to a
-tool-call replay artifact.
-
-```bash
-agentstudio observe import ./fixtures/phoenix-export.json --format phoenix
-agentstudio observe convert --span span_failed_refund --out regressions/refund-retry.json
-agentstudio replay regressions/refund-retry.json --format markdown --out reports/refund-retry.md
-```
-
-Desktop-only live receiver flow:
+This recipe imports a telemetry export you supply into a local Agent Studio
+trace store, then writes canonical replay JSON.
 
 ```bash
-agentstudio observe start --http 4318 --grpc 4317
-OTEL_EXPORTER_OTLP_ENDPOINT=http://127.0.0.1:4318 npm test
+agentstudio import-trace <phoenix-export.json> \
+  --format phoenix \
+  --store telemetry-debug.ast
+
+agentstudio store dump-replay telemetry-debug.ast \
+  --out regressions/telemetry-debug.json
 ```
 
-Browser edition supports file import only.
+Run deterministic assertions after creating a matching assertion file:
+
+```bash
+agentstudio replay regressions/telemetry-debug.json \
+  --assert regressions/telemetry-debug.assertions.yaml \
+  --report reports/telemetry-debug.md
+```
+
+To extract eval cases instead of replay JSON:
+
+```bash
+agentstudio otel-bridge extract <otlp-or-phoenix.json> \
+  --out eval-cases.jsonl
+```
+
+The CLI also exposes `agentstudio otlp receive` for an explicitly started local
+receiver. File import is the narrower default: it does not open a listening port
+or contact an observability backend. Review trace exports for sensitive prompts,
+outputs, headers, and identifiers before import.

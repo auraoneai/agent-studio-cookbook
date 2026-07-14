@@ -1,18 +1,26 @@
 # MCP Filesystem Risk
 
-Demonstrates connecting to a local filesystem MCP server, reviewing broad path
-permissions, recording a safe list operation, and exporting a trace card.
+This runnable recipe connects to the bundled filesystem-risk stdio fixture and
+then statically scans its source.
+
+Run from the cookbook repository root:
 
 ```bash
-agentstudio connect --stdio "npx -y @modelcontextprotocol/server-filesystem ./fixtures" --sandbox --allow-read ./fixtures
-agentstudio risk-scan ./server --fail-on high --format json --out reports/risk.json
-agentstudio record --session filesystem-smoke --tool list_directory --json '{"path":"."}'
-agentstudio export filesystem-smoke.ast --trace-card --out reports/filesystem-smoke.md
+mkdir -p reports
+
+agentstudio --json connect stdio \
+  --command python \
+  --arg sample-servers/filesystem-risk/server.py
+
+agentstudio risk-scan sample-servers/filesystem-risk \
+  --format json \
+  --fail-on critical \
+  --out reports/filesystem-risk.json
 ```
 
-Expected evidence:
+The connection returns a synthetic MCP manifest. The scan records lower-severity
+review findings but uses `critical` so the tutorial command completes
+successfully. Change the threshold to `high` to exercise a failing CI gate.
 
-- Manifest Inspector lists filesystem tools.
-- Risk scan flags broad paths if the server is configured too loosely.
-- Replay succeeds with mocked output.
-- Trace card redacts local absolute paths.
+The fixture does not read or write the filesystem. Its deliberately broad tool
+descriptions exist to exercise inspection and risk-review workflows.
