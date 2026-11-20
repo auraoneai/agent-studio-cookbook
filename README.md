@@ -1,5 +1,7 @@
 # Agent Studio Cookbook
 
+> Examples for [Agent Studio Open](https://auraone.ai/open/agent-studio-open). Not a standalone product.
+
 The Agent Studio Cookbook is a source-only collection of synthetic MCP stdio
 servers and command recipes for inspecting, recording, replaying, and exporting
 agent integration evidence with Agent Studio Open.
